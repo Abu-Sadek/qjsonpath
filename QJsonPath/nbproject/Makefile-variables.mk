@@ -9,8 +9,8 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=MinGW-Windows
 CND_ARTIFACT_DIR_Debug=dist/Debug/MinGW-Windows
-CND_ARTIFACT_NAME_Debug=libQJsonPath.a
-CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/libQJsonPath.a
+CND_ARTIFACT_NAME_Debug=QJsonPath1.dll
+CND_ARTIFACT_PATH_Debug=dist/Debug/MinGW-Windows/QJsonPath1.dll
 CND_PACKAGE_DIR_Debug=dist/Debug/MinGW-Windows/package
 CND_PACKAGE_NAME_Debug=QJsonPath.tar
 CND_PACKAGE_PATH_Debug=dist/Debug/MinGW-Windows/package/QJsonPath.tar
