@@ -4,6 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>JsonPath.h</itemPath>
+      <itemPath>PluginLoader.h</itemPath>
+      <itemPath>QJsonListModel.h</itemPath>
       <itemPath>QJsonPath.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -13,6 +16,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>JsonPath.cpp</itemPath>
+      <itemPath>PluginLoader.cpp</itemPath>
+      <itemPath>QJsonListModel.cpp</itemPath>
       <itemPath>QJsonPath.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -25,11 +31,12 @@
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
+      <itemPath>example.qml</itemPath>
     </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="6">
+    <conf name="Debug" type="5">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>default</compilerSet>
@@ -38,11 +45,25 @@
       </toolsSet>
       <qt>
         <modules>core gui</modules>
+        <defs>
+          <Elem>QT+=qml</Elem>
+          <Elem>QT+=quick</Elem>
+        </defs>
       </qt>
       <compileType>
-        <archiverTool>
-        </archiverTool>
       </compileType>
+      <item path="JsonPath.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="JsonPath.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PluginLoader.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PluginLoader.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="QJsonListModel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="QJsonListModel.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="QJsonPath.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="QJsonPath.h" ex="false" tool="3" flavor2="0">
@@ -75,6 +96,18 @@
         <archiverTool>
         </archiverTool>
       </compileType>
+      <item path="JsonPath.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="JsonPath.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PluginLoader.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="PluginLoader.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="QJsonListModel.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="QJsonListModel.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="QJsonPath.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="QJsonPath.h" ex="false" tool="3" flavor2="0">

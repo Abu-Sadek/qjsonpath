@@ -1,87 +1,90 @@
-
 // An implementation of JSONPath for use with Qt 5.0+ applications
-// Refactored from Google code by Jay Sprenkle ( jsprenkle@gmail )
-
-// Copyright 2010-2013, Google Inc.
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Written by Jay Sprenkle ( jsprenkle@gmail )
 
 #ifndef __QJSONPATH__
 #define __QJSONPATH__
 
-#include <string>
-#include <vector>
-#include <QJsonValue>
+#include "JsonPath.h"
+#include <QtQuick/QQuickItem>
+#include <QJsonDocument>
 
-namespace QJsonPath
+class QJsonPath
+   : public QQuickItem
 {
+   Q_OBJECT
+   Q_PROPERTY( bool valid READ getValid NOTIFY validChanged )
+   Q_PROPERTY( QString path READ getPath WRITE setPath NOTIFY pathChanged )
+   Q_PROPERTY( QString json READ getJson WRITE setJson NOTIFY jsonChanged )
+   Q_PROPERTY( QJsonDocument jsonDocument READ getJsonDocument NOTIFY jsonDocumentChanged )
 
-   // C++ implementation of JsonPath.
-   // http://goessner.net/articles/JsonPath/
-   //
-   // "@", "?()" and "()" are not supported as they require an
-   // "eval()" method on the underlying script language.
+   // <editor-fold defaultstate="collapsed" desc="valid Property">
+public:
+   bool getValid() const;
+private:
+   void setValid( bool );
+   bool _valid;
+signals:
+   /**
+    * signal is emitted if property changes
+    * @param current property value
+    */
+   void validChanged( bool );
+   // </editor-fold>
 
-   class JsonPath
-   {
-   public:
-      // Perform JsonPath query |jsonpath| to the Json node |root|.
-      // Results are saved in |output|. |root| node has the
-      // ownership of the pointer (const Json::Value *) in |output|.
-      //
-      // |output| contains both Object/Array nodes. If you want
-      // to obtain a string expression, use Json::Value::asString()
-      // or Json::Value::toStyledString().
-      //
-      // Usage:
-      //
-      // net::JsonPath::Parse(root, "$.foo.bar[1:2].*.buz", &output);
-      //
-      // for (int i = 0; i < outputs.size(); ++i) {
-      //   const Json::Value *value = output[i];
-      //   if (value->isObjet() || value->isArray()) {
-      //     // output in Json format again.
-      //     cout << value->toStyledString();
-      //   } else {
-      //     cout << value->asString();
-      //   }
-      // }
-      static ::std::vector< QJsonValue > Parse( const QJsonValue& root, const ::std::string& jsonpath );
+   // <editor-fold defaultstate="collapsed" desc="path Property">
+public:
+   QString getPath() const;
+   void setPath( const QString& );
+private:
+   QString _path;
+signals:
+   /**
+    * signal is emitted if property changes
+    * @param current property value
+    */
+   void pathChanged( QString );
+   // </editor-fold>
 
-   private:
-      JsonPath()
-      {
-      }
+   // <editor-fold defaultstate="collapsed" desc="json Property">
+public:
+   QString getJson() const;
+   void setJson( const QString& );
+private:
+   QString _json;
+signals:
+   /**
+    * signal is emitted if property changes
+    * @param current property value
+    */
+   void jsonChanged( QString );
+   // </editor-fold>
 
-      ~JsonPath()
-      {
-      }
-   };
-}
+   // <editor-fold defaultstate="collapsed" desc="jsonDocument Property">
+public:
+   QJsonDocument getJsonDocument() const;
+private:
+   QJsonDocument _jsonDocument;
+signals:
+   /**
+    * signal is emitted if property changes and document is valid
+    * @param current document
+    */
+   void jsonDocumentChanged( QJsonDocument );
+   // </editor-fold>
+
+public:
+   QJsonPath( QQuickItem* parent = 0 );
+   
+private:
+   /**
+    * Check for document changes. Emit change signal if updated.
+    */
+   void update();
+};
+
+#include <QMetaType>
+// This macro makes the type Type known to QMetaType as long as it provides a public default constructor,
+// a public copy constructor and a public destructor. It is needed to use the type Type as a custom type in QVariant.
+Q_DECLARE_METATYPE( QJsonPath* )
 
 #endif

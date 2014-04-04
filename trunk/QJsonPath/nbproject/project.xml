@@ -13,7 +13,7 @@
             <confList>
                 <confElem>
                     <name>Debug</name>
-                    <type>6</type>
+                    <type>5</type>
                 </confElem>
                 <confElem>
                     <name>Release</name>
