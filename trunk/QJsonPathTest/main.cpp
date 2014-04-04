@@ -10,30 +10,29 @@
 #include "QJsonPath.h"
 
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonParseError>
+//#include <QDebug>
 
 // <editor-fold defaultstate="collapsed" desc="base class for tests">
 class QJsonPathTest : public Test::Suite
 {
 public:
-   ::std::vector< QJsonValue > output;
-
-   void test( const char* JsonStr, const char* JsonPathStr )
+   QJsonDocument strToJsonDoc( const char* JsonStr )
    {
       QByteArray json( JsonStr );
       QJsonParseError err;
-      QJsonDocument doc = QJsonDocument::fromJson( json, &err );
-      TEST_ASSERT_MSG( err.error == QJsonParseError::NoError, err.errorString( ).toStdString( ).c_str( ) );
+      return QJsonDocument::fromJson( json, &err );
+   }
 
-      TEST_ASSERT_MSG( doc.isObject( ), "document is not an object" );
-      QJsonObject obj = doc.object( );
-      QJsonValue root( obj );
-      output = QJsonPath::JsonPath::Parse( root, JsonPathStr );
+   QJsonDocument jsonPath( const QJsonDocument& JsonDoc, const char* JsonPathStr )
+   {
+      QJsonValue root( JsonDoc.object() );
+      return ::JsonPath::JsonPath::Parse( root, JsonPathStr );
    }
 };
 // </editor-fold>
-
 
 class HappyPathTest : public QJsonPathTest
 {
@@ -49,13 +48,9 @@ public:
    {
       try
       {
-         test( "{\"name\":\"bob\",\"value\":\"valuetext\"}", "$.name" );
-         TEST_ASSERT_MSG( output.size() == 1, "does not have one node as output" );
-         {
-            const QJsonValue value = output[0];
-            TEST_ASSERT_MSG( value.isString(), "does not have a string as output" );
-            TEST_ASSERT_MSG( value.toString() == QString("bob"), "does not have correct output" );
-         }
+         QJsonDocument input = jsonPath( strToJsonDoc( "{\"name\":\"bob\",\"value\":\"valuetext\"}" ), "$.name" );
+         QJsonDocument expected = strToJsonDoc( "[ \"bob\" ]" );
+         TEST_ASSERT_MSG( input == expected, "output is different than expected" );
       }
       catch ( std::runtime_error& r )
       {
@@ -72,28 +67,9 @@ public:
    {
       try
       {
-         test( "{\"Avatars\":[{\"name\":\"zero\"},{\"name\":\"one\"},{\"name\":\"two\"},{\"name\":\"three\"}]}", "$.Avatars[*].name" );
-         TEST_ASSERT_MSG( output.size() == 4, "output has wrong size" );
-         {
-            const QJsonValue value = output[0];
-            TEST_ASSERT_MSG( value.isString(), "output is not a string" );
-            TEST_ASSERT_MSG( value.toString() == QString("zero"), "does not have correct output" );
-         }
-         {
-            const QJsonValue value = output[1];
-            TEST_ASSERT_MSG( value.isString(), "output is not a string" );
-            TEST_ASSERT_MSG( value.toString() == QString("one"), "does not have correct output" );
-         }
-         {
-            const QJsonValue value = output[2];
-            TEST_ASSERT_MSG( value.isString(), "output is not a string" );
-            TEST_ASSERT_MSG( value.toString() == QString("two"), "does not have correct output" );
-         }
-         {
-            const QJsonValue value = output[3];
-            TEST_ASSERT_MSG( value.isString(), "output is not a string" );
-            TEST_ASSERT_MSG( value.toString() == QString("three"), "does not have correct output" );
-         }
+         QJsonDocument input = jsonPath( strToJsonDoc( "{\"Avatars\":[{\"name\":\"zero\"},{\"name\":\"one\"},{\"name\":\"two\"},{\"name\":\"three\"}]}" ), "$.Avatars[*].name" );
+         QJsonDocument expected = strToJsonDoc( "[ \"zero\", \"one\", \"two\", \"three\" ]" );
+         TEST_ASSERT_MSG( input == expected, "output is different than expected" );
       }
       catch ( std::runtime_error& r )
       {
@@ -110,18 +86,11 @@ public:
    {
       try
       {
-         test( "{\"Avatars\":[{\"name\":\"zero\"},{\"name\":\"one\"},{\"name\":\"two\"},{\"name\":\"three\"}]}", "$..*" );
-         TEST_ASSERT_MSG( output.size() == 5, "output has wrong size" );
-
-         {
-            const QJsonValue value = output[0];
-            TEST_ASSERT_MSG( value.isArray(), "output is not an Array" );
-         }
-         {
-            const QJsonValue value = output[1];
-            TEST_ASSERT_MSG( value.isString(), "output is not a string" );
-            TEST_ASSERT_MSG( value.toString() == QString("zero"), "does not have correct output" );
-         }
+         QJsonDocument input = jsonPath( strToJsonDoc( "{\"Avatars\":[{\"name\":\"zero\"},{\"name\":\"one\"},{\"name\":\"two\"},{\"name\":\"three\"}]}" ), "$..*" );
+         QJsonDocument expected = strToJsonDoc( "[[{\"name\": \"zero\"},{\"name\": \"one\"},{\"name\": \"two\"},{\"name\": \"three\"}],\"zero\",\"one\",\"two\",\"three\"]" );
+//   qDebug() << " input: " << input;
+//   qDebug() << " expected: " << expected;
+         TEST_ASSERT_MSG( input == expected, "output is different than expected" );
       }
       catch ( std::runtime_error& r )
       {
@@ -148,26 +117,26 @@ public:
 
    void test1()
    {
-      TEST_THROWS_MSG( test( "{\"name\":\"bob\",\"value\":\"valuetext\"}", "" ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
+      TEST_THROWS_MSG( jsonPath( strToJsonDoc( "{\"name\":\"bob\",\"value\":\"valuetext\"}" ), "" ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
    }
 
    void test2()
    {
-      TEST_THROWS_MSG( test( "{\"name\":\"bob\",\"value\":\"valuetext\"}", "foobar" ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
+      TEST_THROWS_MSG( jsonPath( strToJsonDoc( "{\"name\":\"bob\",\"value\":\"valuetext\"}" ), "foobar" ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
    }
 
    void test3()
    {
-      TEST_THROWS_MSG( test( "{\"name\":\"bob\",\"value\":\"valuetext\"}", "$." ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
+      TEST_THROWS_MSG( jsonPath( strToJsonDoc( "{\"name\":\"bob\",\"value\":\"valuetext\"}" ), "$." ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
    }
 
    void test4()
    {
-      TEST_THROWS_MSG( test( "{\"name\":\"bob\",\"value\":\"valuetext\"}", "$.name[" ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
+      TEST_THROWS_MSG( jsonPath( strToJsonDoc( "{\"name\":\"bob\",\"value\":\"valuetext\"}" ), "$.name[" ), ::std::runtime_error&, "Test does not throw expected runtime_error" )
    }
 };
 
-int main( int argc, char** argv )
+int main( int, char** )
 {
    Test::CompilerOutput output( Test::CompilerOutput::GCC );
    Test::Suite* p[] =
